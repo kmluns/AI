@@ -19,7 +19,7 @@ class DQLAgent:
         self.epsilon_decay = 0.995
         self.gamma = 0.8
         self.learning_rate = 0.0001
-        self.memory = deque(maxlen=10)
+        self.memory = deque(maxlen=200)
         self.model = self.build_model()
         self.target_model = self.build_model()
 
@@ -102,6 +102,10 @@ class DQLAgent:
     
     def targetModelUpdate(self):
         self.target_model.set_weights(self.model.get_weights())
+        self.target_model.save_weights("model/target_model.h5")
+        
+    def model_save_best(self):
+        self.model.save_weights("model/best_model.h5")
     
 
 # %% 
@@ -114,8 +118,9 @@ agent = DQLAgent(env)
 if __name__ == "__main__":
     #state_number = env.observation_space.shape[0]
     
-    batch_size = 10
+    batch_size = 100
     episodes = 1000
+    best_total_reward =0
     for e in range(episodes):
         
         state = env.reset()
@@ -125,7 +130,7 @@ if __name__ == "__main__":
         total_reward = 0
         for time in range(1000):
             
-            env.render()
+#            env.render()
 
             # act
             action = agent.act(state)
@@ -135,7 +140,7 @@ if __name__ == "__main__":
             next_state = next_state.reshape(-1,210,160,3)
             #next_state = np.reshape(next_state, [1, state_number])
             
-            reward = reward - 5
+            reward = reward
 
             # remember / storage
             agent.remember(state, action, reward, next_state, done)
@@ -147,7 +152,7 @@ if __name__ == "__main__":
             #Perform experience replay if memory length is greater than minibatch length
             agent.replay(batch_size)
 
-            total_reward += reward + 5
+            total_reward += reward
             
             if done :
                 agent.targetModelUpdate()
@@ -158,9 +163,13 @@ if __name__ == "__main__":
 
         # Running average of past 100 episodes
         print('Episode: {}, Reward: {}'.format(e,total_reward))     
+        
+        if best_total_reward < total_reward:
+            best_total_reward = total_reward
+            agent.model_save_best()
     
     
-# %% test
+ # %% test
 import time
 trained_model = agent
 state = env.reset()
