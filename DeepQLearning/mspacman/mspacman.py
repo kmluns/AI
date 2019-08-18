@@ -104,8 +104,13 @@ class DQLAgent:
         self.target_model.set_weights(self.model.get_weights())
         self.target_model.save_weights("model/target_model.h5")
         
-    def model_save_best(self):
-        self.model.save_weights("model/best_model.h5")
+    def model_save_best(self, reward):
+        self.model.save_weights("model/best_model"+reward+".h5")
+        self.target_model.save_weights("model/best_target_model"+reward+".h5")
+        
+    def model_load(self,filePath):
+        self.model.load_weights(filePath)
+        self.target_model.load_weights(filePath)
     
 
 # %% 
@@ -113,6 +118,7 @@ env = gym.make('MsPacman-v0')
 agent = DQLAgent(env)
 
 
+agent.model_load("model/target_model.h5")
 
 # %% main functions        
 if __name__ == "__main__":
@@ -166,7 +172,7 @@ if __name__ == "__main__":
         
         if best_total_reward < total_reward:
             best_total_reward = total_reward
-            agent.model_save_best()
+            agent.model_save_best(best_total_reward)
     
     
  # %% test
