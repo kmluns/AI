@@ -53,10 +53,12 @@ class DQLAgent:
         self.resign = 0
         
         
-        # serialize model to JSON
-        model_json = self.model.to_json()
-        with open("model/big/model.json", "w") as json_file:
-            json_file.write(model_json)
+# =============================================================================
+#         # serialize model to JSON
+#         model_json = self.model.to_json()
+#         with open("model/big/model.json", "w") as json_file:
+#             json_file.write(model_json)
+# =============================================================================
 
 
     
@@ -89,9 +91,9 @@ class DQLAgent:
         #model.add(Dropout(0.8))
         model.add(Dense(256, input_shape= self.state_shape, activation='relu'))
         model.add(Flatten())
-        model.add(Dense(64, activation='relu'))
+        model.add(Dense(1024, activation='relu'))
         model.add(Dropout(0.25))
-        model.add(Dense(64, activation='relu'))
+        model.add(Dense(1024, activation='relu'))
         model.add(Dropout(0.25))
         model.add(Dense(256, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
@@ -279,7 +281,9 @@ if __name__ == "__main__":
             
             if best_total_reward < total_reward:
                 best_total_reward = total_reward
-                agent.model_save_best(str(int(best_total_reward)))
+# =============================================================================
+#                 agent.model_save_best(str(int(best_total_reward)))
+# =============================================================================
             
             if done or total_reward < -100 or step_number > 500:
                 print('Episode {}, reward {}, step {}'.format(e,total_reward, step_number))
@@ -294,28 +298,30 @@ if __name__ == "__main__":
                 
 # %% test
                     
-import time
-
-trained_model = agent
-state = env.reset()
-state = np.reshape(state,[1,8])
-
-time_t = 0
-while True:
-    env.render()
-    action = trained_model.select_action(state)
-    next_state, reward, done, _ = env.step(action)
-    next_state = np.reshape(next_state,[1,8])
-    state = next_state
-    time_t += 1
-    print(time_t)
-    #`time.sleep(0.05)
-    if done:
-        break
-    
-    
-print("Done!")
-                    
+# =============================================================================
+# import time
+# 
+# trained_model = agent
+# state = env.reset()
+# state = np.reshape(state,[1,8])
+# 
+# time_t = 0
+# while True:
+#     env.render()
+#     action = trained_model.select_action(state)
+#     next_state, reward, done, _ = env.step(action)
+#     next_state = np.reshape(next_state,[1,8])
+#     state = next_state
+#     time_t += 1
+#     print(time_t)
+#     #`time.sleep(0.05)
+#     if done:
+#         break
+#     
+#     
+# print("Done!")
+#                     
+# =============================================================================
     
                 
                 
